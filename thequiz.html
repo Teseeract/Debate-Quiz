@@ -71,16 +71,20 @@
       font-size: 14px;
       line-height: 20px;
     }
-  </style>
+  @keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
 </head>
 <body>
 
-$1
+<h1>🔥 What's Your Debating Element? 🌊</h1>
 <p style="text-align: center; font-size: 14px; color: #666; margin-top: -10px;">Powered by Tuesday Academy V1.0</p>
 
 <form id="quizForm"></form>
 
-<div id="result" class="result" style="display:none; border-top: 4px solid #007BFF; padding-top: 20px;"></div>
+<div id="result" class="result" style="display:none; border-top: 4px solid #007BFF; padding-top: 20px; animation: fadeIn 1s ease-in-out;"></div>
 
 <script>
   const questions = [
