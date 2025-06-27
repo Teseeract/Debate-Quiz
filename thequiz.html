@@ -79,17 +79,17 @@
 
 <form id="quizForm"></form>
 
-<div id="result" class="result" style="display:none;"></div>
+<div id="result" class="result" style="display:none; border-top: 4px solid #007BFF; padding-top: 20px;"></div>
 
 <script>
   const questions = [
     {
       question: "Why did you originally join debating?",
       options: [
-        { text: "To prove myself and win arguments.", value: "a" },
-        { text: "To better understand others' perspectives.", value: "b" },
-        { text: "To sharpen my logic and analytical skills.", value: "c" },
-        { text: "To explore ideas and express my creativity.", value: "d" }
+        { text: "To prove myself and win arguments." , value: "a" },
+        { text: "To better understand others' perspectives." , value: "b" },
+        { text: "To sharpen my logic and analytical skills." , value: "c" },
+        { text: "To explore ideas and express my creativity." , value: "d" }
       ]
     },
     {
@@ -254,19 +254,19 @@
   const descriptions = {
     fire: {
       name: "🔥 Fire – The Challenger",
-      text: "You thrive in the heat of the moment. Passionate, competitive, and energetic, you bring intensity to every round. You're bold in clashes and unafraid to take risks — sometimes overwhelming, but always unforgettable."
+      text: "You thrive in the heat of the moment. Passionate, competitive, and energetic, you bring intensity to every round. You're bold in clashes and unafraid to take risks — sometimes overwhelming, but always unforgettable. As a debater, you're the sparkplug of the team. You perform best in moments that require quick thinking, fiery rebuttals, or commanding the room with powerful rhetoric. When you’re in your element, your speeches can shift the entire energy of a round."
     },
     water: {
       name: "🌊 Water – The Empath",
-      text: "You navigate debates with emotional intelligence and grace. Calm, adaptable, and strategic, you read the room well and excel in nuanced analysis. You’re not the loudest, but you often win hearts and minds."
+      text: "You navigate debates with emotional intelligence and grace. Calm, adaptable, and strategic, you read the room well and excel in nuanced analysis. You’re not the loudest, but you often win hearts and minds. As a debater, you're the emotional compass of your team, able to sense tone shifts and tailor arguments to resonate deeply with judges. You’re invaluable in moral debates, narrative framing, and empathy-driven persuasion."
     },
     earth: {
       name: "🌍 Earth – The Analyst",
-      text: "You bring order to chaos. Logical, structured, and deeply prepared, you ground your team with solid analysis and unshakable frameworks. You may not dazzle, but you never crumble under pressure."
+      text: "You bring order to chaos. Logical, structured, and deeply prepared, you ground your team with solid analysis and unshakable frameworks. You may not dazzle, but you never crumble under pressure. In debate, you’re the planner — the one who ensures arguments hold up under scrutiny. Your strength lies in clear structure, tight logic, and being the rock others rely on when the motion is messy or complex."
     },
     air: {
       name: "🌬 Air – The Visionary",
-      text: "You’re the abstract thinker with a creative edge. Witty, intuitive, and full of lateral insights, you challenge norms and flip debates on their heads. At your best, you inspire; at your worst, you confuse."
+      text: "You’re the abstract thinker with a creative edge. Witty, intuitive, and full of lateral insights, you challenge norms and flip debates on their heads. At your best, you inspire; at your worst, you confuse. As a debater, you shine when the motion invites reinterpretation or unorthodox framing. Your strength is in surprise — you see links others don’t and make arguments feel fresh and intellectually exciting."
     }
   };
 
@@ -283,16 +283,16 @@
 
   function blendedDescription(primary, secondary, percentages) {
     const mixMap = {
-      airfire: { name: "⚡ Lightning", desc: "You dazzle with sharp wit and wild creativity. You move fast, think even faster, and always keep your opponents guessing." },
-      airearth: { name: "🏜️ Sand", desc: "You blend structure and abstraction effortlessly. Grounded in logic yet always flexible, you erode weak arguments grain by grain — subtle, strategic, and quietly powerful." },
-      airwater: { name: "🌫️ Mist", desc: "Elusive but persuasive, you bring sensitivity and originality to every round. You often sway others with subtle but powerful insights." },
-      earthfire: { name: "🐦‍🔥 Lava", desc: "A grounded powerhouse. You use structured logic but erupt with fiery impact when needed. Calm under pressure, yet explosively persuasive." },
-      earthwater: { name: "🤎 Mud", desc: "Calm, consistent, and precise. You win rounds by gently but firmly shaping the terrain of debate. Your style sticks with the judges." },
-      firewater: { name: "♨️ Steam", desc: "You are both passionate and empathetic — combining intensity with emotional insight. You’re a speaker who brings both force and grace into the room." },
-      airearthfire: { name: "🔥🌪 Wildfire", desc: "Structure feeds your speed, and you blaze through arguments." },
-      airfirewater: { name: "⛈ Storm", desc: "You’re a tempest of emotion, energy, and creativity." },
-      airEarthWater: { name: "🌫 Quicksand", desc: "Slow, deliberate, and deadly effective." },
-      earthfirewater: { name: "🌋 Volcano", desc: "Explosive yet grounded, you combine passion, empathy, and structure." }
+      airfire: { name: "⚡ Lightning", desc: "You dazzle with sharp wit and wild creativity. You move fast, think even faster, and always keep your opponents guessing. You're bold, energetic, and can electrify the room when you're on fire. As a debater, you thrive in fast-paced exchanges, love POIs, and often shine in whip or reply speeches where thinking on your feet matters most." },
+      airearth: { name: "🏜️ Sand", desc: "You blend structure and abstraction effortlessly. Grounded in logic yet always flexible, you erode weak arguments grain by grain — subtle, strategic, and quietly powerful. As a debater, you're likely the silent strategist. You may not speak the loudest, but your framing shifts the debate in powerful, underappreciated ways." },
+      airwater: { name: "🌫️ Mist", desc: "Elusive but persuasive, you bring sensitivity and originality to every round. You often sway others with subtle but powerful insights. Gentle but never weak, you make complexity elegant. You’re the type of debater who thrives in nuanced motions and excels at pulling hidden assumptions to the surface." },
+      earthfire: { name: "🐦‍🔥 Lava", desc: "A grounded powerhouse. You use structured logic but erupt with fiery impact when needed. Calm under pressure, yet explosively persuasive. Your calm surface hides formidable force. You’re a master at layering strong frameworks with impactful rhetoric — ideal for opening half roles where the foundation matters." },
+      earthwater: { name: "🤎 Mud", desc: "Calm, consistent, and precise. You win rounds by gently but firmly shaping the terrain of debate. You’re a stabilizer in the storm — dependable, grounded, and quietly effective. Your preferred roles are often those requiring steady development, like deputy speeches or reply summaries that reinforce and refine the team's message." },
+      firewater: { name: "♨️ Steam", desc: "You are both passionate and empathetic — combining intensity with emotional insight. You’re a speaker who brings both force and grace into the room. You press hard, but you listen deeply too. You are often the emotional anchor of your team, capable of balancing pathos and logos, making you excellent at persuasive narrative-building and refutation alike." },
+      airearthfire: { name: "🔥🌪 Wildfire", desc: "You’re rapid, calculated chaos. Your arguments spread like wildfire — unpredictable, forceful, and impossible to ignore. You balance creativity with logic and intensity with finesse. As a debater, you likely thrive in back halves where you can adapt quickly and burn through weak opposition lines. When you speak, the room pays attention — because no one knows what’s coming next, but they know it’ll leave an impact." },
+      airfirewater: { name: "⛈ Storm", desc: "You’re a tempest of emotion, energy, and creativity — unpredictable and powerful. You blend rhetorical flair, emotional appeal, and visionary framing into an explosive mix. In debate, you're the force that disrupts the expected flow, reframing debates and overwhelming opponents with multi-faceted pressure. You thrive on the unexpected and often change the tide with a single inspired speech." },
+      airEarthWater: { name: "🌫 Quicksand", desc: "Slow, deliberate, and deadly effective. You subtly pull opponents off balance and drag them into deeply framed complexity. You excel at setting traps and reframing debates in ways that disorient your opponents while staying calm yourself. As a debater, you are the sleeper threat — underestimated at first, but lethal by the final speech." },
+      earthfirewater: { name: "🌋 Volcano", desc: "Explosive yet grounded, you combine passion, empathy, and structure. You build arguments that simmer slowly before erupting in a dramatic finish. In debate, you're the teammate who holds the room's attention from the first word to the last. With control, precision, and intensity, you’re an all-rounder capable of taking on any role — and dominating it." }
     };
 
     const sortedElems = Object.entries(percentages).sort((a, b) => b[1] - a[1]);
@@ -301,7 +301,8 @@
     const mix = mixMap[comboKey];
 
     if (mix) {
-      return `<h3 style="font-size: 24px;">${mix.name}</h3><p style="font-size: 18px;">${mix.desc}</p>`;
+      return `<hr style="margin: 30px 0; border: none; border-top: 2px dashed #ccc;">
+<h3 style="font-size: 24px; color: #222;">${mix.name}</h3><p style="font-size: 18px; color: #444; line-height: 1.6;">${mix.desc}</p>`;
     }
 
     return `<h3>🔀 ${primary.toUpperCase()} + ${secondary.toUpperCase()}</h3><p>You’re a unique blend of <strong>${primary}</strong> and <strong>${secondary}</strong>. Together, they form something new — but we don't yet have a name for it!</p>`;
@@ -309,6 +310,4 @@
 </script>
 
 </body>
-</html>
-
 </html>
