@@ -71,52 +71,53 @@
 <h1>🔥 What's Your Debating Element? 🌊</h1>
 
 <form id="quizForm">
+
   <div class="question">
     <h3>1. How do you usually respond when your opponent misunderstands your argument?</h3>
-    <label><input type="radio" name="q1" value="a"> Firmly correct them to regain control of the room.</label>
-    <label><input type="radio" name="q1" value="b"> Clarify calmly and restate in simpler terms.</label>
-    <label><input type="radio" name="q1" value="c"> Let it slide unless it affects the core of your case.</label>
     <label><input type="radio" name="q1" value="d"> Use it as a pivot to reframe your entire argument.</label>
+    <label><input type="radio" name="q1" value="b"> Clarify calmly and restate in simpler terms.</label>
+    <label><input type="radio" name="q1" value="a"> Firmly correct them to regain control of the room.</label>
+    <label><input type="radio" name="q1" value="c"> Let it slide unless it affects the core of your case.</label>
   </div>
 
   <div class="question">
     <h3>2. What’s your biggest strength during prep time?</h3>
-    <label><input type="radio" name="q2" value="a"> Generating strong examples and punchy phrasing.</label>
-    <label><input type="radio" name="q2" value="b"> Anticipating emotional angles or audience reaction.</label>
-    <label><input type="radio" name="q2" value="c"> Creating a clear case structure with layered logic.</label>
     <label><input type="radio" name="q2" value="d"> Brainstorming unusual but compelling frames.</label>
+    <label><input type="radio" name="q2" value="c"> Creating a clear case structure with layered logic.</label>
+    <label><input type="radio" name="q2" value="b"> Anticipating emotional angles or audience reaction.</label>
+    <label><input type="radio" name="q2" value="a"> Generating strong examples and punchy phrasing.</label>
   </div>
 
   <div class="question">
     <h3>3. During crossfire (POIs or rebuttal clashes), what’s your instinct?</h3>
+    <label><input type="radio" name="q3" value="d"> Use crossfire to expose contradictions with humor or irony.</label>
+    <label><input type="radio" name="q3" value="c"> Avoid it unless necessary; focus on your speeches.</label>
     <label><input type="radio" name="q3" value="a"> Interject often and aggressively to rattle your opponents.</label>
     <label><input type="radio" name="q3" value="b"> Choose moments carefully and ask probing, polite questions.</label>
-    <label><input type="radio" name="q3" value="c"> Avoid it unless necessary; focus on your speeches.</label>
-    <label><input type="radio" name="q3" value="d"> Use crossfire to expose contradictions with humor or irony.</label>
   </div>
 
   <div class="question">
     <h3>4. How do you make your case persuasive?</h3>
-    <label><input type="radio" name="q4" value="a"> Deliver your points with passion and urgency.</label>
     <label><input type="radio" name="q4" value="b"> Connect the motion to real-world impact and empathy.</label>
-    <label><input type="radio" name="q4" value="c"> Build step-by-step logic that’s hard to refute.</label>
     <label><input type="radio" name="q4" value="d"> Redefine the issue to make your side seem inevitable.</label>
+    <label><input type="radio" name="q4" value="c"> Build step-by-step logic that’s hard to refute.</label>
+    <label><input type="radio" name="q4" value="a"> Deliver your points with passion and urgency.</label>
   </div>
 
   <div class="question">
     <h3>5. You’re in a tight round against strong opponents. What’s your strategy?</h3>
-    <label><input type="radio" name="q5" value="a"> Go bold: try to outshine with energy and assertiveness.</label>
-    <label><input type="radio" name="q5" value="b"> Stay adaptable and listen closely to tweak your case.</label>
     <label><input type="radio" name="q5" value="c"> Stick to your prepared structure and out-analyze them.</label>
+    <label><input type="radio" name="q5" value="b"> Stay adaptable and listen closely to tweak your case.</label>
     <label><input type="radio" name="q5" value="d"> Flip the framing in your reply speech to undermine their assumptions.</label>
+    <label><input type="radio" name="q5" value="a"> Go bold: try to outshine with energy and assertiveness.</label>
   </div>
 
   <div class="question">
     <h3>6. Which type of motion do you usually enjoy the most?</h3>
+    <label><input type="radio" name="q6" value="d"> Meta or abstract motions about debate, identity, or philosophy.</label>
+    <label><input type="radio" name="q6" value="c"> Policy-heavy or tech-regulation motions.</label>
     <label><input type="radio" name="q6" value="a"> Moral dilemmas or activism-based debates.</label>
     <label><input type="radio" name="q6" value="b"> Social issues and nuanced ethical decisions.</label>
-    <label><input type="radio" name="q6" value="c"> Policy-heavy or tech-regulation motions.</label>
-    <label><input type="radio" name="q6" value="d"> Meta or abstract motions about debate, identity, or philosophy.</label>
   </div>
 
   <button type="button" class="submit-btn" onclick="calculateResult()">See Your Elemental Mix</button>
@@ -127,40 +128,40 @@
 <script>
   const answerWeights = {
     q1: {
-      a: { fire: 70, earth: 30 },
-      b: { water: 60, earth: 40 },
-      c: { air: 70, water: 30 },
-      d: { air: 80, fire: 20 }
+      a: { fire: 70, earth: 30 }, // firmly correct
+      b: { water: 60, earth: 40 }, // clarify calmly
+      c: { air: 70, water: 30 }, // let it slide
+      d: { air: 80, fire: 20 } // reframe
     },
     q2: {
-      a: { fire: 60, air: 40 },
-      b: { water: 70, air: 30 },
-      c: { earth: 80, water: 20 },
-      d: { air: 75, fire: 25 }
+      a: { fire: 60, air: 40 }, // punchy phrasing
+      b: { water: 70, air: 30 }, // anticipating emotion
+      c: { earth: 80, water: 20 }, // structure
+      d: { air: 75, fire: 25 } // unusual frame
     },
     q3: {
-      a: { fire: 85, air: 15 },
-      b: { water: 60, earth: 40 },
-      c: { earth: 70, water: 30 },
-      d: { air: 70, fire: 30 }
+      a: { fire: 85, air: 15 }, // aggressive
+      b: { water: 60, earth: 40 }, // polite probing
+      c: { earth: 70, water: 30 }, // avoid
+      d: { air: 70, fire: 30 } // irony
     },
     q4: {
-      a: { fire: 75, water: 25 },
-      b: { water: 80, earth: 20 },
-      c: { earth: 85, fire: 15 },
-      d: { air: 80, earth: 20 }
+      a: { fire: 75, water: 25 }, // passion
+      b: { water: 80, earth: 20 }, // empathy
+      c: { earth: 85, fire: 15 }, // logic
+      d: { air: 80, earth: 20 } // redefine
     },
     q5: {
-      a: { fire: 90, air: 10 },
-      b: { water: 80, earth: 20 },
-      c: { earth: 85, water: 15 },
-      d: { air: 85, fire: 15 }
+      a: { fire: 90, air: 10 }, // go bold
+      b: { water: 80, earth: 20 }, // adapt
+      c: { earth: 85, water: 15 }, // structure
+      d: { air: 85, fire: 15 } // framing
     },
     q6: {
-      a: { fire: 70, water: 30 },
-      b: { water: 70, earth: 30 },
-      c: { earth: 75, fire: 25 },
-      d: { air: 80, water: 20 }
+      a: { fire: 70, water: 30 }, // activism
+      b: { water: 70, earth: 30 }, // social ethics
+      c: { earth: 75, fire: 25 }, // policy
+      d: { air: 80, water: 20 } // abstract/meta
     }
   };
 
@@ -205,3 +206,4 @@
 
 </body>
 </html>
+
