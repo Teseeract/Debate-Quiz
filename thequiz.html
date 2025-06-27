@@ -84,6 +84,15 @@
 <script>
   const questions = [
     {
+      question: "Why did you originally join debating?",
+      options: [
+        { text: "To prove myself and win arguments.", value: "a" },
+        { text: "To better understand others' perspectives.", value: "b" },
+        { text: "To sharpen my logic and analytical skills.", value: "c" },
+        { text: "To explore ideas and express my creativity.", value: "d" }
+      ]
+    },
+    {
       question: "How do you usually respond when your opponent misunderstands your argument?",
       options: [
         { text: "Use it as a pivot to reframe your entire argument.", value: "d" },
@@ -124,7 +133,7 @@
       options: [
         { text: "Stick to your prepared structure and out-analyze them.", value: "c" },
         { text: "Stay adaptable and listen closely to tweak your case.", value: "b" },
-        { text: "Flip the framing to undermine their assumptions.", value: "d" },
+        { text: "Flip the framing in your reply speech to undermine their assumptions.", value: "d" },
         { text: "Go bold: try to outshine with energy and assertiveness.", value: "a" }
       ]
     },
@@ -175,32 +184,6 @@
     }
   ];
 
-  const answerWeights = {
-    a: { fire: 85, air: 15 },
-    b: { water: 80, earth: 20 },
-    c: { earth: 85, fire: 15 },
-    d: { air: 85, water: 15 }
-  };
-
-  const descriptions = {
-    fire: {
-      name: "🔥 Fire – The Challenger",
-      text: "You thrive in the heat of the moment. Passionate, competitive, and energetic, you bring intensity to every round. You're bold in clashes and unafraid to take risks — sometimes overwhelming, but always unforgettable."
-    },
-    water: {
-      name: "🌊 Water – The Empath",
-      text: "You navigate debates with emotional intelligence and grace. Calm, adaptable, and strategic, you read the room well and excel in nuanced analysis. You’re not the loudest, but you often win hearts and minds."
-    },
-    earth: {
-      name: "🌍 Earth – The Analyst",
-      text: "You bring order to chaos. Logical, structured, and deeply prepared, you ground your team with solid analysis and unshakable frameworks. You may not dazzle, but you never crumble under pressure."
-    },
-    air: {
-      name: "🌬 Air – The Visionary",
-      text: "You’re the abstract thinker with a creative edge. Witty, intuitive, and full of lateral insights, you challenge norms and flip debates on their heads. At your best, you inspire; at your worst, you confuse."
-    }
-  };
-
   const form = document.getElementById('quizForm');
   questions.forEach((q, i) => {
     const div = document.createElement('div');
@@ -237,7 +220,7 @@
     const sorted = Object.entries(percentages).sort((a, b) => b[1] - a[1]);
     const [topElem, topPercent] = sorted[0];
     const [secondElem, secondPercent] = sorted[1];
-    const blend = Math.abs(topPercent - secondPercent) <= 5;
+    const blend = Math.abs(topPercent - secondPercent) <= 5 || percentages[sorted[2][0]] > 20;
 
     const result = document.getElementById("result");
     result.innerHTML = `
@@ -247,7 +230,7 @@
       ${generateBar("🌍 Earth", percentages.earth, "#2ecc71")}
       ${generateBar("🌬 Air", percentages.air, "#9b59b6")}
       <div style="margin-top:25px;">
-        ${blend ? blendedDescription(topElem, secondElem) : singleDescription(topElem)}
+        ${blend ? blendedDescription(topElem, secondElem, percentages) : singleDescription(topElem)}
       </div>
       <button onclick="window.location.reload()" style="margin-top:20px; padding: 10px 20px; background:#555; color:white; border:none; border-radius:5px; cursor:pointer;">Retake Quiz</button>
     `;
@@ -261,17 +244,67 @@
       <div class="bar"><div class="bar-inner" style="width:${percent}%; background:${color};">${percent > 10 ? percent + '%' : ''}</div></div>
     `;
   }
+  const answerWeights = {
+    a: { fire: 85, air: 15 },
+    b: { water: 80, earth: 20 },
+    c: { earth: 85, fire: 15 },
+    d: { air: 85, water: 15 }
+  };
+
+  const descriptions = {
+    fire: {
+      name: "🔥 Fire – The Challenger",
+      text: "You thrive in the heat of the moment. Passionate, competitive, and energetic, you bring intensity to every round. You're bold in clashes and unafraid to take risks — sometimes overwhelming, but always unforgettable."
+    },
+    water: {
+      name: "🌊 Water – The Empath",
+      text: "You navigate debates with emotional intelligence and grace. Calm, adaptable, and strategic, you read the room well and excel in nuanced analysis. You’re not the loudest, but you often win hearts and minds."
+    },
+    earth: {
+      name: "🌍 Earth – The Analyst",
+      text: "You bring order to chaos. Logical, structured, and deeply prepared, you ground your team with solid analysis and unshakable frameworks. You may not dazzle, but you never crumble under pressure."
+    },
+    air: {
+      name: "🌬 Air – The Visionary",
+      text: "You’re the abstract thinker with a creative edge. Witty, intuitive, and full of lateral insights, you challenge norms and flip debates on their heads. At your best, you inspire; at your worst, you confuse."
+    }
+  };
 
   function singleDescription(elem) {
-    return `<h3>${descriptions[elem].name}</h3><p>${descriptions[elem].text}</p>`;
+    const nameMap = {
+      fire: "🔥 Fire",
+      water: "🌊 Water",
+      earth: "🌍 Earth",
+      air: "🌬 Air"
+    };
+    const title = `<h3>${nameMap[elem]} – The Pure Element</h3>`;
+    return `${title}<p>${descriptions[elem].text}</p>`;
   }
 
-  function blendedDescription(primary, secondary) {
-    return `
-      <h3>${descriptions[primary].name} + ${descriptions[secondary].name}</h3>
-      <p>You’re a unique blend of <strong>${primary.toUpperCase()}</strong> and <strong>${secondary.toUpperCase()}</strong>. ${descriptions[primary].text}</p>
-      <p>But you also show traits of ${secondary.toUpperCase()} – ${descriptions[secondary].text}</p>
-    `;
+  function blendedDescription(primary, secondary, percentages) {
+    const mixMap = {
+      airfire: { name: "⚡ Lightning", desc: "You dazzle with sharp wit and wild creativity. You move fast, think even faster, and always keep your opponents guessing." },
+      airearth: { name: "🏜️ Sand", desc: "You blend structure and abstraction effortlessly. Grounded in logic yet always flexible, you erode weak arguments grain by grain — subtle, strategic, and quietly powerful." },
+      airwater: { name: "🌫️ Mist", desc: "Elusive but persuasive, you bring sensitivity and originality to every round. You often sway others with subtle but powerful insights." },
+      earthfire: { name: "🐦‍🔥 Lava", desc: "A grounded powerhouse. You use structured logic but erupt with fiery impact when needed. Calm under pressure, yet explosively persuasive." },
+      earthwater: { name: "🤎 Mud", desc: "Calm, consistent, and precise. You win rounds by gently but firmly shaping the terrain of debate. Your style sticks with the judges." },
+      firewater: { name: "♨️ Steam", desc: "You are both passionate and empathetic — combining intensity with emotional insight. You’re a speaker who brings both force and grace into the room." },
+      airearthfire: { name: "🔥🌪 Wildfire", desc: "Structure feeds your speed, and you blaze through arguments." },
+      airfirewater: { name: "⛈ Storm", desc: "You’re a tempest of emotion, energy, and creativity." },
+      airEarthWater: { name: "🌫 Quicksand", desc: "Slow, deliberate, and deadly effective." },
+      earthfirewater: { name: "🌋 Volcano", desc: "Explosive yet grounded, you combine passion, empathy, and structure." }
+    };
+
+    const sortedElems = Object.entries(percentages).sort((a, b) => b[1] - a[1]);
+    const topThree = sortedElems.slice(0, 3).filter(([_, v]) => v > 20).map(([k]) => k);
+    const comboKey = topThree.length >= 2 ? topThree.sort().join('') : [primary, secondary].sort().join('');
+    const mix = mixMap[comboKey];
+
+    if (mix) {
+      return `<h3 style="font-size: 24px;">${mix.name}</h3><p style="font-size: 18px;">${mix.desc}</p>`;
+    }
+
+    return `<h3>🔀 ${primary.toUpperCase()} + ${secondary.toUpperCase()}</h3><p>You’re a unique blend of <strong>${primary}</strong> and <strong>${secondary}</strong>. Together, they form something new — but we don't yet have a name for it!</p>`;
   }
 </script>
 
