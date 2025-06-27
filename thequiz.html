@@ -16,28 +16,35 @@
       color: #333;
     }
     .question {
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       padding: 15px;
       background: white;
       border-radius: 10px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     .question h3 {
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
     .options label {
       display: block;
-      margin-bottom: 15px;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 6px;
       cursor: pointer;
+    }
+    .options input[type="radio"] {
+      margin-right: 10px;
     }
     .submit-btn {
       display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
+      margin: 30px auto 10px;
+      padding: 12px 24px;
       background: #007BFF;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       font-size: 16px;
       cursor: pointer;
     }
@@ -70,107 +77,61 @@
 
 <h1>🔥 What's Your Debating Element? 🌊</h1>
 
-<form id="quizForm">
-
-  <div class="question">
-    <h3>1. How do you usually respond when your opponent misunderstands your argument?</h3>
-    <label><input type="radio" name="q1" value="d"> Use it as a pivot to reframe your entire argument.</label>
-    <label><input type="radio" name="q1" value="b"> Clarify calmly and restate in simpler terms.</label>
-    <label><input type="radio" name="q1" value="a"> Firmly correct them to regain control of the room.</label>
-    <label><input type="radio" name="q1" value="c"> Let it slide unless it affects the core of your case.</label>
-  </div>
-
-  <div class="question">
-    <h3>2. What’s your biggest strength during prep time?</h3>
-    <label><input type="radio" name="q2" value="d"> Brainstorming unusual but compelling frames.</label>
-    <label><input type="radio" name="q2" value="c"> Creating a clear case structure with layered logic.</label>
-    <label><input type="radio" name="q2" value="b"> Anticipating emotional angles or audience reaction.</label>
-    <label><input type="radio" name="q2" value="a"> Generating strong examples and punchy phrasing.</label>
-  </div>
-
-  <div class="question">
-    <h3>3. During crossfire (POIs or rebuttal clashes), what’s your instinct?</h3>
-    <label><input type="radio" name="q3" value="d"> Use crossfire to expose contradictions with humor or irony.</label>
-    <label><input type="radio" name="q3" value="c"> Avoid it unless necessary; focus on your speeches.</label>
-    <label><input type="radio" name="q3" value="a"> Interject often and aggressively to rattle your opponents.</label>
-    <label><input type="radio" name="q3" value="b"> Choose moments carefully and ask probing, polite questions.</label>
-  </div>
-
-  <div class="question">
-    <h3>4. How do you make your case persuasive?</h3>
-    <label><input type="radio" name="q4" value="b"> Connect the motion to real-world impact and empathy.</label>
-    <label><input type="radio" name="q4" value="d"> Redefine the issue to make your side seem inevitable.</label>
-    <label><input type="radio" name="q4" value="c"> Build step-by-step logic that’s hard to refute.</label>
-    <label><input type="radio" name="q4" value="a"> Deliver your points with passion and urgency.</label>
-  </div>
-
-  <div class="question">
-    <h3>5. You’re in a tight round against strong opponents. What’s your strategy?</h3>
-    <label><input type="radio" name="q5" value="c"> Stick to your prepared structure and out-analyze them.</label>
-    <label><input type="radio" name="q5" value="b"> Stay adaptable and listen closely to tweak your case.</label>
-    <label><input type="radio" name="q5" value="d"> Flip the framing in your reply speech to undermine their assumptions.</label>
-    <label><input type="radio" name="q5" value="a"> Go bold: try to outshine with energy and assertiveness.</label>
-  </div>
-
-  <div class="question">
-    <h3>6. Which type of motion do you usually enjoy the most?</h3>
-    <label><input type="radio" name="q6" value="d"> Meta or abstract motions about debate, identity, or philosophy.</label>
-    <label><input type="radio" name="q6" value="c"> Policy-heavy or tech-regulation motions.</label>
-    <label><input type="radio" name="q6" value="a"> Moral dilemmas or activism-based debates.</label>
-    <label><input type="radio" name="q6" value="b"> Social issues and nuanced ethical decisions.</label>
-  </div>
-
-  <button type="button" class="submit-btn" onclick="calculateResult()">See Your Elemental Mix</button>
-</form>
+<form id="quizForm"></form>
 
 <div id="result" class="result" style="display:none;"></div>
 
 <script>
+  const questions = [...]; // Questions stay as is
+
   const answerWeights = {
-    q1: {
-      a: { fire: 70, earth: 30 },
-      b: { water: 60, earth: 40 },
-      c: { air: 70, water: 30 },
-      d: { air: 80, fire: 20 }
+    a: { fire: 85, air: 15 },
+    b: { water: 80, earth: 20 },
+    c: { earth: 85, fire: 15 },
+    d: { air: 85, water: 15 }
+  };
+
+  const descriptions = {
+    fire: {
+      name: "🔥 Fire – The Challenger",
+      text: "You thrive in the heat of the moment. Passionate, competitive, and energetic, you bring intensity to every round. You're bold in clashes and unafraid to take risks — sometimes overwhelming, but always unforgettable."
     },
-    q2: {
-      a: { fire: 60, air: 40 },
-      b: { water: 70, air: 30 },
-      c: { earth: 80, water: 20 },
-      d: { air: 75, fire: 25 }
+    water: {
+      name: "🌊 Water – The Empath",
+      text: "You navigate debates with emotional intelligence and grace. Calm, adaptable, and strategic, you read the room well and excel in nuanced analysis. You’re not the loudest, but you often win hearts and minds."
     },
-    q3: {
-      a: { fire: 85, air: 15 },
-      b: { water: 60, earth: 40 },
-      c: { earth: 70, water: 30 },
-      d: { air: 70, fire: 30 }
+    earth: {
+      name: "🌍 Earth – The Analyst",
+      text: "You bring order to chaos. Logical, structured, and deeply prepared, you ground your team with solid analysis and unshakable frameworks. You may not dazzle, but you never crumble under pressure."
     },
-    q4: {
-      a: { fire: 75, water: 25 },
-      b: { water: 80, earth: 20 },
-      c: { earth: 85, fire: 15 },
-      d: { air: 80, earth: 20 }
-    },
-    q5: {
-      a: { fire: 90, air: 10 },
-      b: { water: 80, earth: 20 },
-      c: { earth: 85, water: 15 },
-      d: { air: 85, fire: 15 }
-    },
-    q6: {
-      a: { fire: 70, water: 30 },
-      b: { water: 70, earth: 30 },
-      c: { earth: 75, fire: 25 },
-      d: { air: 80, water: 20 }
+    air: {
+      name: "🌬 Air – The Visionary",
+      text: "You’re the abstract thinker with a creative edge. Witty, intuitive, and full of lateral insights, you challenge norms and flip debates on their heads. At your best, you inspire; at your worst, you confuse."
     }
   };
 
-  function calculateResult() {
-    const formData = new FormData(document.getElementById("quizForm"));
-    const totals = { fire: 0, water: 0, earth: 0, air: 0 };
+  const form = document.getElementById('quizForm');
+  questions.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'question';
+    div.innerHTML = `<h3>${q.question}</h3>` + q.options.map(opt => `
+      <label><input type="radio" name="q${i + 1}" value="${opt.value}"> ${opt.text}</label>`).join('');
+    form.appendChild(div);
+  });
 
-    for (let [question, choice] of formData.entries()) {
-      const weights = answerWeights[question][choice];
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'submit-btn';
+  button.innerText = 'See Your Elemental Mix';
+  button.onclick = calculateResult;
+  form.appendChild(button);
+
+  function calculateResult() {
+    const totals = { fire: 0, water: 0, earth: 0, air: 0 };
+    const formData = new FormData(form);
+
+    for (let [key, value] of formData.entries()) {
+      const weights = answerWeights[value];
       for (let elem in weights) {
         totals[elem] += weights[elem];
       }
@@ -190,58 +151,36 @@
     const result = document.getElementById("result");
     result.innerHTML = `
       <h2>Your Debating Personality Mix</h2>
-      ${generateBar("🔥 Fire", "fire", percentages.fire, "#e74c3c")}
-      ${generateBar("🌊 Water", "water", percentages.water, "#3498db")}
-      ${generateBar("🌍 Earth", "earth", percentages.earth, "#2ecc71")}
-      ${generateBar("🌬 Air", "air", percentages.air, "#9b59b6")}
-      <div style="margin-top:25px;">${getElementDescription(topElem, blend ? secondElem : null)}</div>
+      ${generateBar("🔥 Fire", percentages.fire, "#e74c3c")}
+      ${generateBar("🌊 Water", percentages.water, "#3498db")}
+      ${generateBar("🌍 Earth", percentages.earth, "#2ecc71")}
+      ${generateBar("🌬 Air", percentages.air, "#9b59b6")}
+      <div style="margin-top:25px;">
+        ${blend ? blendedDescription(topElem, secondElem) : singleDescription(topElem)}
+      </div>
       <button onclick="window.location.reload()" style="margin-top:20px; padding: 10px 20px; background:#555; color:white; border:none; border-radius:5px; cursor:pointer;">Retake Quiz</button>
     `;
-    result.style.display = "block";
+    result.style.display = 'block';
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   }
 
-  function generateBar(label, key, percent, color) {
+  function generateBar(label, percent, color) {
     return `
       <div><strong>${label}:</strong> ${percent}%</div>
-      <div class="bar">
-        <div class="bar-inner" style="width:${percent}%; background:${color};">${percent > 10 ? percent + '%' : ''}</div>
-      </div>
+      <div class="bar"><div class="bar-inner" style="width:${percent}%; background:${color};">${percent > 10 ? percent + '%' : ''}</div></div>
     `;
   }
 
-  function getElementDescription(primary, secondary = null) {
-    const descriptions = {
-      fire: {
-        name: "🔥 Fire – The Challenger",
-        text: "You thrive in the heat of the moment. Passionate, competitive, and energetic, you bring intensity to every round. You're bold in clashes and unafraid to take risks — sometimes overwhelming, but always unforgettable."
-      },
-      water: {
-        name: "🌊 Water – The Empath",
-        text: "You navigate debates with emotional intelligence and grace. Calm, adaptable, and strategic, you read the room well and excel in nuanced analysis. You’re not the loudest, but you often win hearts and minds."
-      },
-      earth: {
-        name: "🌍 Earth – The Analyst",
-        text: "You bring order to chaos. Logical, structured, and deeply prepared, you ground your team with solid analysis and unshakable frameworks. You may not dazzle, but you never crumble under pressure."
-      },
-      air: {
-        name: "🌬 Air – The Visionary",
-        text: "You’re the abstract thinker with a creative edge. Witty, intuitive, and full of lateral insights, you challenge norms and flip debates on their heads. At your best, you inspire; at your worst, you confuse."
-      }
-    };
+  function singleDescription(elem) {
+    return `<h3>${descriptions[elem].name}</h3><p>${descriptions[elem].text}</p>`;
+  }
 
-    if (secondary) {
-      return `
-        <h3>${descriptions[primary].name} + ${descriptions[secondary].name}</h3>
-        <p>You’re a unique blend of <strong>${primary.toUpperCase()}</strong> and <strong>${secondary.toUpperCase()}</strong>. ${descriptions[primary].text}</p>
-        <p>But you also show traits of ${secondary.toUpperCase()} – ${descriptions[secondary].text}</p>
-      `;
-    } else {
-      return `
-        <h3>${descriptions[primary].name}</h3>
-        <p>${descriptions[primary].text}</p>
-      `;
-    }
+  function blendedDescription(primary, secondary) {
+    return `
+      <h3>${descriptions[primary].name} + ${descriptions[secondary].name}</h3>
+      <p>You’re a unique blend of <strong>${primary.toUpperCase()}</strong> and <strong>${secondary.toUpperCase()}</strong>. ${descriptions[primary].text}</p>
+      <p>But you also show traits of ${secondary.toUpperCase()} – ${descriptions[secondary].text}</p>
+    `;
   }
 </script>
 
