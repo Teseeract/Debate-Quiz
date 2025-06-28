@@ -80,7 +80,7 @@
 <body>
 
 <h1>🔥 What's Your Debating Element? 🌊</h1>
-<p style="text-align: center; font-size: 14px; color: #666; margin-top: -10px;">Powered by Tuesday Academy V2</p>
+<p style="text-align: center; font-size: 14px; color: #666; margin-top: -10px;">Powered by Tuesday Academy V2.1</p>
 
 <form id="quizForm"></form>
 
@@ -262,7 +262,7 @@
     console.log('Quiz Data with Results:', quizData);
     console.log('About to send JSON:', JSON.stringify(quizData, null, 2));
     
-    fetch('https://script.google.com/macros/s/AKfycbwx-84We3ZLnwrd5CNYudat5G02BlJQ8RTqwIcYmIWBzSOAKbQp5OvTnXzisR38TF4ZzQ/exec', {
+    fetch('https://script.google.com/macros/s/AKfycbyVthKao7QgU4Bu43SWzcXcPJBN3bD4Ka2HrD8W4MSlzLGgp45Ii3FWtM3-Nom-AoHdPg/exec', {
       method: 'POST',
       mode: 'no-cors',
       body: JSON.stringify(quizData),
@@ -377,7 +377,8 @@
       "air+fire+water": "Storm",
       "air+earth+water": "Quicksand", 
       "earth+fire+water": "Volcano",
-            // Four-element blend
+      
+      // Four-element blend
       "air+earth+fire+water": "Avatar"
     };
 
@@ -408,8 +409,9 @@
       "air+fire+water": { name: "⛈ Storm", desc: "You're a tempest of emotion, energy, and creativity — unpredictable and powerful. You blend rhetorical flair, emotional appeal, and visionary framing into an explosive mix. In debate, you're the force that disrupts the expected flow, reframing debates and overwhelming opponents with multi-faceted pressure. You thrive on the unexpected and often change the tide with a single inspired speech." },
       "air+earth+water": { name: "🌫 Quicksand", desc: "Slow, deliberate, and deadly effective. You subtly pull opponents off balance and drag them into deeply framed complexity. You excel at setting traps and reframing debates in ways that disorient your opponents while staying calm yourself. As a debater, you are the sleeper threat — underestimated at first, but lethal by the final speech." },
       "earth+fire+water": { name: "🌋 Volcano", desc: "Explosive yet grounded, you combine passion, empathy, and structure. You build arguments that simmer slowly before erupting in a dramatic finish. In debate, you're the teammate who holds the room's attention from the first word to the last. With control, precision, and intensity, you're an all-rounder capable of taking on any role — and dominating it." },
+      
+      // Four-element blend
       "air+earth+fire+water": { name: "🌌 Avatar", desc: "You are the master of all elements — the ultimate debater who seamlessly blends passion, logic, creativity, and empathy. You adapt to any situation, any opponent, any motion with fluid mastery. In debate, you're the complete package: strategic like Earth, fierce like Fire, intuitive like Water, and innovative like Air. You don't just participate in debates — you transcend them, bringing a rare combination of analytical depth, emotional intelligence, creative insight, and compelling delivery that makes you formidable in any role on any team." }
-
     };
 
     // Get top elements above 20%
