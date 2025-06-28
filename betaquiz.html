@@ -233,6 +233,15 @@
     const formData = new FormData(form);
     formData.forEach((value, key) => { quizData[key] = value; });
     
+    // Check if all questions are answered
+    const expectedQuestions = 11;
+    const answeredQuestions = Object.keys(quizData).length;
+    
+    if (answeredQuestions < expectedQuestions) {
+      alert(`Please answer all questions. You've answered ${answeredQuestions} out of ${expectedQuestions}.`);
+      return;
+    }
+    
     // Calculate results and get the data
     const resultsData = calculateResult();
     
@@ -247,15 +256,24 @@
     quizData.secondPercentage = resultsData.secondPercentage;
     quizData.isBlended = resultsData.isBlended;
     quizData.elementType = resultsData.elementType;
+    quizData.resultName = resultsData.resultName;
     quizData.timestamp = resultsData.timestamp;
     
     console.log('Quiz Data with Results:', quizData);
+    console.log('About to send JSON:', JSON.stringify(quizData, null, 2));
     
-    fetch('https://script.google.com/macros/s/AKfycbwfg9zZ2d7CBbrjiFIx65GWweSSdwx4yxuU9JoaCfQp2PC05atupiBJ1PI4W0ciWIFxgA/exec', {
+    fetch('https://script.google.com/macros/s/AKfycbwx-84We3ZLnwrd5CNYudat5G02BlJQ8RTqwIcYmIWBzSOAKbQp5OvTnXzisR38TF4ZzQ/exec', {
       method: 'POST',
       mode: 'no-cors',
       body: JSON.stringify(quizData),
       headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => {
+      console.log('Fetch completed');
+      // Note: response will be opaque due to no-cors mode
+    })
+    .catch(error => {
+      console.error('Fetch error:', error);
     });
   };
   form.appendChild(button);
@@ -292,6 +310,7 @@
       secondPercentage: secondPercent,
       isBlended: blend,
       elementType: blend ? `${topElem}_${secondElem}_blend` : `${topElem}_pure`,
+      resultName: blend ? getBlendName(topElem, secondElem, percentages) : getSingleElementName(topElem),
       timestamp: new Date().toISOString()
     };
 
@@ -331,6 +350,45 @@
     };
     const title = `<h3>${nameMap[elem]} – The Pure Element</h3>`;
     return `${title}<p>${descriptions[elem].text}</p>`;
+  }
+
+  function getSingleElementName(elem) {
+    const nameMap = {
+      fire: "Fire – The Challenger",
+      water: "Water – The Empath", 
+      earth: "Earth – The Analyst",
+      air: "Air – The Visionary"
+    };
+    return nameMap[elem] || elem;
+  }
+
+  function getBlendName(primary, secondary, percentages) {
+    const mixMap = {
+      // Two-element blends
+      "air+fire": "Lightning",
+      "air+earth": "Sand", 
+      "air+water": "Mist",
+      "earth+fire": "Lava",
+      "earth+water": "Mud",
+      "fire+water": "Steam",
+      
+      // Three-element blends
+      "air+earth+fire": "Wildfire",
+      "air+fire+water": "Storm",
+      "air+earth+water": "Quicksand", 
+      "earth+fire+water": "Volcano"
+    };
+
+    // Get top elements above 20%
+    const sortedElems = Object.entries(percentages).sort((a, b) => b[1] - a[1]);
+    const significantElems = sortedElems.filter(([_, v]) => v > 20).map(([k]) => k);
+    
+    // Create combo key with consistent ordering (alphabetical)
+    const comboKey = significantElems.length >= 2 ? 
+      significantElems.sort().join('+') : 
+      [primary, secondary].sort().join('+');
+    
+    return mixMap[comboKey] || `${primary}+${secondary} blend`;
   }
 
   function blendedDescription(primary, secondary, percentages) {
