@@ -80,7 +80,7 @@
 <body>
 
 <h1>🔥 What's Your Debating Element? 🌊</h1>
-<p style="text-align: center; font-size: 14px; color: #666; margin-top: -10px;">Powered by Tuesday Academy V1.62</p>
+<p style="text-align: center; font-size: 14px; color: #666; margin-top: -10px;">Powered by Tuesday Academy V1.6XX</p>
 
 <form id="quizForm"></form>
 
@@ -252,6 +252,12 @@
       <button onclick="window.location.reload()" style="margin-top:20px; padding: 10px 20px; background:#555; color:white; border:none; border-radius:5px; cursor:pointer;">Retake Quiz</button>
     `;
     result.style.display = 'block';
+    const formData = new FormData(document.getElementById('quizForm'));
+  const quizData = {};
+  formData.forEach((value, key) => { quizData[key] = value; });
+  quizData.resultType = resultType;
+  quizData.percentages = percentages;
+  quizData.resultHTML = resultHTML; // <-- Include full result HTML if you want
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   }
 
