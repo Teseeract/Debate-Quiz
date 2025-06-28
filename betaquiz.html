@@ -206,7 +206,7 @@
     const quizData = {};
     const formData = new FormData(form);
     formData.forEach((value, key) => { quizData[key] = value; });
-    fetch('YOUR_APPS_SCRIPT_WEBAPP_URL', {
+    fetch('https://script.google.com/macros/s/AKfycbxsR48SHvv0M38fKqqOsis3CF9JKduq56WliF9cttKi5-EdVpTpX3TbO1Jv_WMLBiVgOQ/exec', {
       method: 'POST',
       body: JSON.stringify(quizData),
       headers: { 'Content-Type': 'application/json' }
