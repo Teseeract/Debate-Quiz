@@ -80,7 +80,7 @@
 <body>
 
 <h1>🔥 What's Your Debating Element? 🌊</h1>
-<p style="text-align: center; font-size: 14px; color: #666; margin-top: -10px;">Powered by Tuesday Academy V1.4</p>
+<p style="text-align: center; font-size: 14px; color: #666; margin-top: -10px;">Powered by Tuesday Academy V1.5</p>
 
 <form id="quizForm"></form>
 
@@ -206,6 +206,7 @@
     const quizData = {};
     const formData = new FormData(form);
     formData.forEach((value, key) => { quizData[key] = value; });
+    console.log('Quiz Data:', quizData);
     fetch('https://script.google.com/macros/s/AKfycbxsR48SHvv0M38fKqqOsis3CF9JKduq56WliF9cttKi5-EdVpTpX3TbO1Jv_WMLBiVgOQ/exec', {
       method: 'POST',
       mode: 'no-cors',
