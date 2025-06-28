@@ -80,7 +80,7 @@
 <body>
 
 <h1>🔥 What's Your Debating Element? 🌊</h1>
-<p style="text-align: center; font-size: 14px; color: #666; margin-top: -10px;">Powered by Tuesday Academy V1.62</p>
+<p style="text-align: center; font-size: 14px; color: #666; margin-top: -10px;">Powered by Tuesday Academy V1.6X</p>
 
 <form id="quizForm"></form>
 
@@ -260,7 +260,7 @@ function calculateResult() {
   console.log('✅ Quiz Data:', quizData);
 
   // ✅ POST to your Apps Script Web App
-  fetch('YOUR_APPS_SCRIPT_WEBAPP_URL', {
+  fetch('https://script.google.com/macros/s/AKfycby8_v6oPHs2uMkugI-nS8ZsscqeV1hOvhjvIXcl2q2ZyCyBUn3tyE90uxAiw95TVIyZsw/exec', {
     method: 'POST',
     mode: 'no-cors',
     body: JSON.stringify(quizData)
