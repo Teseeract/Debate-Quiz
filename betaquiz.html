@@ -207,7 +207,7 @@
     const formData = new FormData(form);
     formData.forEach((value, key) => { quizData[key] = value; });
     console.log('Quiz Data:', quizData);
-    fetch('https://script.google.com/macros/s/AKfycbytWEmtUVhrLwPGx809IuVWV564V0vAJn0akTHzvoKHKcNmaFzVb9f1mAeFtXZlgF1BSw/exec', {
+    fetch('https://script.google.com/macros/s/AKfycbzWGTiGVw6BsEBr7nAUwFnIK3kVFkPhQyPlNX-Z1o5tRFNZfJAmwud7SV3qPiLqg86Rhg/exec', {
       method: 'POST',
       mode: 'no-cors',
       body: JSON.stringify(quizData),
