@@ -80,7 +80,7 @@
 <body>
 
 <h1>🔥 What's Your Debating Element? 🌊</h1>
-<p style="text-align: center; font-size: 14px; color: #666; margin-top: -10px;">Powered by Tuesday Academy V2.0</p>
+<p style="text-align: center; font-size: 14px; color: #666; margin-top: -10px;">Powered by Tuesday Academy V1.61</p>
 
 <form id="quizForm"></form>
 
@@ -251,7 +251,7 @@
     
     console.log('Quiz Data with Results:', quizData);
     
-    fetch('https://script.google.com/macros/s/AKfycbwfg9zZ2d7CBbrjiFIx65GWweSSdwx4yxuU9JoaCfQp2PC05atupiBJ1PI4W0ciWIFxgA/exec', {
+    fetch('https://script.google.com/macros/s/AKfycbyVthKao7QgU4Bu43SWzcXcPJBN3bD4Ka2HrD8W4MSlzLGgp45Ii3FWtM3-Nom-AoHdPg/exec', {
       method: 'POST',
       mode: 'no-cors',
       body: JSON.stringify(quizData),
@@ -280,7 +280,8 @@
     const sorted = Object.entries(percentages).sort((a, b) => b[1] - a[1]);
     const [topElem, topPercent] = sorted[0];
     const [secondElem, secondPercent] = sorted[1];
-    const blend = Math.abs(topPercent - secondPercent) <= 5 || percentages[sorted[2][0]] > 20;
+    // Blend only if secondary is at least 90% of the top value
+    const blend = secondPercent >= (topPercent * 0.9);
 
     // Create results data object to return
     const resultsData = {
@@ -334,21 +335,30 @@
 
   function blendedDescription(primary, secondary, percentages) {
     const mixMap = {
-      airfire: { name: "⚡ Lightning", desc: "You dazzle with sharp wit and wild creativity. You move fast, think even faster, and always keep your opponents guessing. You're bold, energetic, and can electrify the room when you're on fire. As a debater, you thrive in fast-paced exchanges, love POIs, and often shine in whip or reply speeches where thinking on your feet matters most." },
-      airearth: { name: "🏜️ Sand", desc: "You blend structure and abstraction effortlessly. Grounded in logic yet always flexible, you erode weak arguments grain by grain — subtle, strategic, and quietly powerful. As a debater, you're likely the silent strategist. You may not speak the loudest, but your framing shifts the debate in powerful, underappreciated ways." },
-      airwater: { name: "🌫️ Mist", desc: "Elusive but persuasive, you bring sensitivity and originality to every round. You often sway others with subtle but powerful insights. Gentle but never weak, you make complexity elegant. You're the type of debater who thrives in nuanced motions and excels at pulling hidden assumptions to the surface." },
-      earthfire: { name: "🐦‍🔥 Lava", desc: "A grounded powerhouse. You use structured logic but erupt with fiery impact when needed. Calm under pressure, yet explosively persuasive. Your calm surface hides formidable force. You're a master at layering strong frameworks with impactful rhetoric — ideal for opening half roles where the foundation matters." },
-      earthwater: { name: "🤎 Mud", desc: "Calm, consistent, and precise. You win rounds by gently but firmly shaping the terrain of debate. You're a stabilizer in the storm — dependable, grounded, and quietly effective. Your preferred roles are often those requiring steady development, like deputy speeches or reply summaries that reinforce and refine the team's message." },
-      firewater: { name: "♨️ Steam", desc: "You are both passionate and empathetic — combining intensity with emotional insight. You're a speaker who brings both force and grace into the room. You press hard, but you listen deeply too. You are often the emotional anchor of your team, capable of balancing pathos and logos, making you excellent at persuasive narrative-building and refutation alike." },
-      airearthfire: { name: "🔥🌪 Wildfire", desc: "You're rapid, calculated chaos. Your arguments spread like wildfire — unpredictable, forceful, and impossible to ignore. You balance creativity with logic and intensity with finesse. As a debater, you likely thrive in back halves where you can adapt quickly and burn through weak opposition lines. When you speak, the room pays attention — because no one knows what's coming next, but they know it'll leave an impact." },
-      airfirewater: { name: "⛈ Storm", desc: "You're a tempest of emotion, energy, and creativity — unpredictable and powerful. You blend rhetorical flair, emotional appeal, and visionary framing into an explosive mix. In debate, you're the force that disrupts the expected flow, reframing debates and overwhelming opponents with multi-faceted pressure. You thrive on the unexpected and often change the tide with a single inspired speech." },
-      airEarthWater: { name: "🌫 Quicksand", desc: "Slow, deliberate, and deadly effective. You subtly pull opponents off balance and drag them into deeply framed complexity. You excel at setting traps and reframing debates in ways that disorient your opponents while staying calm yourself. As a debater, you are the sleeper threat — underestimated at first, but lethal by the final speech." },
-      earthfirewater: { name: "🌋 Volcano", desc: "Explosive yet grounded, you combine passion, empathy, and structure. You build arguments that simmer slowly before erupting in a dramatic finish. In debate, you're the teammate who holds the room's attention from the first word to the last. With control, precision, and intensity, you're an all-rounder capable of taking on any role — and dominating it." }
+      // Two-element blends
+      "air+fire": { name: "⚡ Lightning", desc: "You dazzle with sharp wit and wild creativity. You move fast, think even faster, and always keep your opponents guessing. You're bold, energetic, and can electrify the room when you're on fire. As a debater, you thrive in fast-paced exchanges, love POIs, and often shine in whip or reply speeches where thinking on your feet matters most." },
+      "air+earth": { name: "🏜️ Sand", desc: "You blend structure and abstraction effortlessly. Grounded in logic yet always flexible, you erode weak arguments grain by grain — subtle, strategic, and quietly powerful. As a debater, you're likely the silent strategist. You may not speak the loudest, but your framing shifts the debate in powerful, underappreciated ways." },
+      "air+water": { name: "🌫️ Mist", desc: "Elusive but persuasive, you bring sensitivity and originality to every round. You often sway others with subtle but powerful insights. Gentle but never weak, you make complexity elegant. You're the type of debater who thrives in nuanced motions and excels at pulling hidden assumptions to the surface." },
+      "earth+fire": { name: "🐦‍🔥 Lava", desc: "A grounded powerhouse. You use structured logic but erupt with fiery impact when needed. Calm under pressure, yet explosively persuasive. Your calm surface hides formidable force. You're a master at layering strong frameworks with impactful rhetoric — ideal for opening half roles where the foundation matters." },
+      "earth+water": { name: "🤎 Mud", desc: "Calm, consistent, and precise. You win rounds by gently but firmly shaping the terrain of debate. You're a stabilizer in the storm — dependable, grounded, and quietly effective. Your preferred roles are often those requiring steady development, like deputy speeches or reply summaries that reinforce and refine the team's message." },
+      "fire+water": { name: "♨️ Steam", desc: "You are both passionate and empathetic — combining intensity with emotional insight. You're a speaker who brings both force and grace into the room. You press hard, but you listen deeply too. You are often the emotional anchor of your team, capable of balancing pathos and logos, making you excellent at persuasive narrative-building and refutation alike." },
+      
+      // Three-element blends
+      "air+earth+fire": { name: "🔥🌪 Wildfire", desc: "You're rapid, calculated chaos. Your arguments spread like wildfire — unpredictable, forceful, and impossible to ignore. You balance creativity with logic and intensity with finesse. As a debater, you likely thrive in back halves where you can adapt quickly and burn through weak opposition lines. When you speak, the room pays attention — because no one knows what's coming next, but they know it'll leave an impact." },
+      "air+fire+water": { name: "⛈ Storm", desc: "You're a tempest of emotion, energy, and creativity — unpredictable and powerful. You blend rhetorical flair, emotional appeal, and visionary framing into an explosive mix. In debate, you're the force that disrupts the expected flow, reframing debates and overwhelming opponents with multi-faceted pressure. You thrive on the unexpected and often change the tide with a single inspired speech." },
+      "air+earth+water": { name: "🌫 Quicksand", desc: "Slow, deliberate, and deadly effective. You subtly pull opponents off balance and drag them into deeply framed complexity. You excel at setting traps and reframing debates in ways that disorient your opponents while staying calm yourself. As a debater, you are the sleeper threat — underestimated at first, but lethal by the final speech." },
+      "earth+fire+water": { name: "🌋 Volcano", desc: "Explosive yet grounded, you combine passion, empathy, and structure. You build arguments that simmer slowly before erupting in a dramatic finish. In debate, you're the teammate who holds the room's attention from the first word to the last. With control, precision, and intensity, you're an all-rounder capable of taking on any role — and dominating it." }
     };
 
+    // Get top elements above 20%
     const sortedElems = Object.entries(percentages).sort((a, b) => b[1] - a[1]);
-    const topThree = sortedElems.slice(0, 3).filter(([_, v]) => v > 20).map(([k]) => k);
-    const comboKey = topThree.length >= 2 ? topThree.sort().join('') : [primary, secondary].sort().join('');
+    const significantElems = sortedElems.filter(([_, v]) => v > 20).map(([k]) => k);
+    
+    // Create combo key with consistent ordering (alphabetical)
+    const comboKey = significantElems.length >= 2 ? 
+      significantElems.sort().join('+') : 
+      [primary, secondary].sort().join('+');
+    
     const mix = mixMap[comboKey];
 
     if (mix) {
