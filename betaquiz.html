@@ -80,7 +80,7 @@
 <body>
 
 <h1>🔥 What's Your Debating Element? 🌊</h1>
-<p style="text-align: center; font-size: 14px; color: #666; margin-top: -10px;">Powered by Tuesday Academy V1.6X</p>
+<p style="text-align: center; font-size: 14px; color: #666; margin-top: -10px;">Powered by Tuesday Academy V1.62</p>
 
 <form id="quizForm"></form>
 
@@ -207,7 +207,7 @@
     const formData = new FormData(form);
     formData.forEach((value, key) => { quizData[key] = value; });
     console.log('Quiz Data:', quizData);
-    fetch('https://script.google.com/macros/s/AKfycby8_v6oPHs2uMkugI-nS8ZsscqeV1hOvhjvIXcl2q2ZyCyBUn3tyE90uxAiw95TVIyZsw/exec', {
+    fetch('https://script.google.com/macros/s/AKfycbxUz7rWqXZlCjFsFlJLRnWvD1UGvUpghD7dxIxwTr81zS9dBUw_19eBghcrikkXhMUTNw/exec', {
       method: 'POST',
       mode: 'no-cors',
       body: JSON.stringify(quizData),
@@ -217,72 +217,43 @@
   };
   form.appendChild(button);
 
-function calculateResult() {
-  const totals = { fire: 0, water: 0, earth: 0, air: 0 };
-  const formData = new FormData(document.getElementById('quizForm'));
+  function calculateResult() {
+    const totals = { fire: 0, water: 0, earth: 0, air: 0 };
+    const formData = new FormData(form);
 
-  for (let [key, value] of formData.entries()) {
-    const weights = answerWeights[value];
-    for (let elem in weights) {
-      totals[elem] += weights[elem];
+    for (let [key, value] of formData.entries()) {
+      const weights = answerWeights[value];
+      for (let elem in weights) {
+        totals[elem] += weights[elem];
+      }
     }
+
+    const totalScore = Object.values(totals).reduce((a, b) => a + b, 0);
+    const percentages = {};
+    for (let elem in totals) {
+      percentages[elem] = Math.round((totals[elem] / totalScore) * 100);
+    }
+
+    const sorted = Object.entries(percentages).sort((a, b) => b[1] - a[1]);
+    const [topElem, topPercent] = sorted[0];
+    const [secondElem, secondPercent] = sorted[1];
+    const blend = Math.abs(topPercent - secondPercent) <= 5 || percentages[sorted[2][0]] > 20;
+
+    const result = document.getElementById("result");
+    result.innerHTML = `
+      <h2>Your Debating Personality Mix</h2>
+      ${generateBar("🔥 Fire", percentages.fire, "#e74c3c")}
+      ${generateBar("🌊 Water", percentages.water, "#3498db")}
+      ${generateBar("🌍 Earth", percentages.earth, "#2ecc71")}
+      ${generateBar("🌬 Air", percentages.air, "#9b59b6")}
+      <div style="margin-top:25px;">
+        ${blend ? blendedDescription(topElem, secondElem, percentages) : singleDescription(topElem)}
+      </div>
+      <button onclick="window.location.reload()" style="margin-top:20px; padding: 10px 20px; background:#555; color:white; border:none; border-radius:5px; cursor:pointer;">Retake Quiz</button>
+    `;
+    result.style.display = 'block';
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   }
-
-  const totalScore = Object.values(totals).reduce((a, b) => a + b, 0);
-  const percentages = {};
-  for (let elem in totals) {
-    percentages[elem] = Math.round((totals[elem] / totalScore) * 100);
-  }
-
-  const sorted = Object.entries(percentages).sort((a, b) => b[1] - a[1]);
-  const [topElem, topPercent] = sorted[0];
-  const [secondElem, secondPercent] = sorted[1];
-  const blend = Math.abs(topPercent - secondPercent) <= 5 || percentages[sorted[2][0]] > 20;
-
-  // ✅ Compute the final result name
-  let resultType = '';
-  if (blend) {
-    resultType = blendedDescription(topElem, secondElem, percentages)
-      .match(/<h3[^>]*>(.*?)<\\/h3>/i)?.[1] || `${topElem}+${secondElem}`;
-  } else {
-    resultType = singleDescription(topElem)
-      .match(/<h3[^>]*>(.*?)<\\/h3>/i)?.[1] || topElem;
-  }
-
-  // ✅ Build quizData
-  const quizData = {};
-  formData.forEach((value, key) => {
-    quizData[key] = value;
-  });
-  quizData.resultType = resultType;
-  quizData.percentages = percentages;
-
-  console.log('✅ Quiz Data:', quizData);
-
-  // ✅ POST to your Apps Script Web App
-  fetch('https://script.google.com/macros/s/AKfycby8_v6oPHs2uMkugI-nS8ZsscqeV1hOvhjvIXcl2q2ZyCyBUn3tyE90uxAiw95TVIyZsw/exec', {
-    method: 'POST',
-    mode: 'no-cors',
-    body: JSON.stringify(quizData)
-  });
-
-  // ✅ Show results on screen
-  const result = document.getElementById("result");
-  result.innerHTML = `
-    <h2>Your Debating Personality Mix</h2>
-    ${generateBar("🔥 Fire", percentages.fire, "#e74c3c")}
-    ${generateBar("🌊 Water", percentages.water, "#3498db")}
-    ${generateBar("🌍 Earth", percentages.earth, "#2ecc71")}
-    ${generateBar("🌬 Air", percentages.air, "#9b59b6")}
-    <div style="margin-top:25px;">
-      ${blend ? blendedDescription(topElem, secondElem, percentages) : singleDescription(topElem)}
-    </div>
-    <button onclick="window.location.reload()" style="margin-top:20px; padding: 10px 20px; background:#555; color:white; border:none; border-radius:5px; cursor:pointer;">Retake Quiz</button>
-  `;
-  result.style.display = 'block';
-  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-}
-
 
   function generateBar(label, percent, color) {
     return `
