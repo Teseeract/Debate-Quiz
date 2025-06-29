@@ -80,7 +80,7 @@
 <body>
 
 <h1>🔥 What's Your Debating Element? 🌊</h1>
-<p style="text-align: center; font-size: 14px; color: #666; margin-top: -10px;">Powered by Tuesday Academy V3</p>
+<p style="text-align: center; font-size: 14px; color: #666; margin-top: -10px;">Powered by Tuesday Academy V4.1</p>
 
 <form id="quizForm"></form>
 
@@ -312,19 +312,18 @@
       };
     }
 
-    // Two-way blend: Check first if top 2 are close (within 8 points) and both high (25%+)
-    if (topPercent - secondPercent <= 8 && secondPercent >= 25) {
-      const elements = [topElem, secondElem].sort();
+    // Check for four-way blend first: all elements 22%+ and range ≤15 points
+    if (fourthPercent >= 22 && (topPercent - fourthPercent) <= 15) {
       return {
         isBlended: true,
-        elementType: 'two_way_blend',
-        resultElements: elements,
-        resultName: getBlendName(elements)
+        elementType: 'four_way_blend',
+        resultElements: ['air', 'earth', 'fire', 'water'].sort(),
+        resultName: getBlendName(['air', 'earth', 'fire', 'water'])
       };
     }
 
-    // Check for tight three-way blend: top 3 all within 10 points of each other and all 25%+
-    if (thirdPercent >= 25 && (topPercent - thirdPercent) <= 10 && (secondPercent - thirdPercent) <= 5) {
+    // Check for three-way blend: top 3 all 24%+ and range between top and third ≤8 points
+    if (thirdPercent >= 24 && (topPercent - thirdPercent) <= 8) {
       const elements = [topElem, secondElem, thirdElem].sort();
       return {
         isBlended: true,
@@ -334,18 +333,30 @@
       };
     }
 
-    // Four-way blend: all elements 22%+ and top element not more than 12 points ahead of lowest
-    if (fourthPercent >= 22 && (topPercent - fourthPercent) <= 12) {
+    // Tight two-way blend: top 2 very close (≤5 points) and both high (28%+)
+    if (topPercent - secondPercent <= 5 && secondPercent >= 28) {
+      const elements = [topElem, secondElem].sort();
       return {
         isBlended: true,
-        elementType: 'four_way_blend',
-        resultElements: ['air', 'earth', 'fire', 'water'].sort(),
-        resultName: getBlendName(['air', 'earth', 'fire', 'water'])
+        elementType: 'two_way_blend',
+        resultElements: elements,
+        resultName: getBlendName(elements)
       };
     }
 
-    // Looser two-way blend: top 2 within 15 points and second element 20%+
-    if (topPercent - secondPercent <= 15 && secondPercent >= 20) {
+    // Regular two-way blend: top 2 within 12 points and second element 25%+
+    if (topPercent - secondPercent <= 12 && secondPercent >= 25) {
+      const elements = [topElem, secondElem].sort();
+      return {
+        isBlended: true,
+        elementType: 'two_way_blend',
+        resultElements: elements,
+        resultName: getBlendName(elements)
+      };
+    }
+
+    // Looser two-way blend: top 2 within 18 points and second element 20%+
+    if (topPercent - secondPercent <= 18 && secondPercent >= 20) {
       const elements = [topElem, secondElem].sort();
       return {
         isBlended: true,
