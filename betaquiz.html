@@ -71,11 +71,11 @@
       font-size: 14px;
       line-height: 20px;
     }
-  @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-</style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
 
@@ -91,10 +91,10 @@
     {
       question: "Why did you originally join debating?",
       options: [
-        { text: "To prove myself and win arguments." , value: "a" },
-        { text: "To better understand others' perspectives." , value: "b" },
-        { text: "To sharpen my logic and analytical skills." , value: "c" },
-        { text: "To explore ideas and express my creativity." , value: "d" }
+        { text: "To prove myself and win arguments.", value: "a" },
+        { text: "To better understand others' perspectives.", value: "b" },
+        { text: "To sharpen my logic and analytical skills.", value: "c" },
+        { text: "To explore ideas and express my creativity.", value: "d" }
       ]
     },
     {
@@ -215,224 +215,293 @@
     }
   };
 
+  // Initialize the form with questions
   const form = document.getElementById('quizForm');
   questions.forEach((q, i) => {
     const div = document.createElement('div');
     div.className = 'question';
-    div.innerHTML = `<h3>${q.question}</h3>` + q.options.map(opt => `
-      <div class='options'><label><input type="radio" name="q${i + 1}" value="${opt.value}"> ${opt.text}</label></div>`).join('');
+    div.innerHTML = `
+      <h3>Q${i+1}: ${q.question}</h3>
+      <div class="options">
+        ${q.options.map(opt => `
+          <label>
+            <input type="radio" name="q${i+1}" value="${opt.value}" required>
+            ${opt.text}
+          </label>
+        `).join('')}
+      </div>
+    `;
     form.appendChild(div);
   });
 
+  // Add submit button
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'submit-btn';
   button.innerText = 'See Your Elemental Mix';
-  button.onclick = function() {
-    const quizData = {};
-    const formData = new FormData(form);
-    formData.forEach((value, key) => { quizData[key] = value; });
+  button.onclick = calculateAndDisplayResults;
+  form.appendChild(button);
+
+  function calculateAndDisplayResults() {
+    // Validate all questions are answered
+    const unanswered = [];
+    questions.forEach((_, i) => {
+      if (!document.querySelector(`input[name="q${i+1}"]:checked`)) {
+        unanswered.push(i+1);
+      }
+    });
     
-    // Check if all questions are answered
-    const expectedQuestions = 11;
-    const answeredQuestions = Object.keys(quizData).length;
-    
-    if (answeredQuestions < expectedQuestions) {
-      alert(`Please answer all questions. You've answered ${answeredQuestions} out of ${expectedQuestions}.`);
+    if (unanswered.length > 0) {
+      alert(`Please answer all questions. Missing questions: ${unanswered.join(', ')}`);
       return;
     }
     
-    // Calculate results and get the data
-    const resultsData = calculateResult();
-    
-    // Add results directly to quizData (flattened)
-    quizData.firePercentage = resultsData.percentages.fire;
-    quizData.waterPercentage = resultsData.percentages.water;
-    quizData.earthPercentage = resultsData.percentages.earth;
-    quizData.airPercentage = resultsData.percentages.air;
-    quizData.topElement = resultsData.topElement;
-    quizData.topPercentage = resultsData.topPercentage;
-    quizData.secondElement = resultsData.secondElement;
-    quizData.secondPercentage = resultsData.secondPercentage;
-    quizData.isBlended = resultsData.isBlended;
-    quizData.elementType = resultsData.elementType;
-    quizData.resultName = resultsData.resultName;
-    quizData.timestamp = resultsData.timestamp;
-    
-    console.log('Quiz Data with Results:', quizData);
-    console.log('About to send JSON:', JSON.stringify(quizData, null, 2));
-    
-    fetch('https://script.google.com/macros/s/AKfycbwN-rp9VSjWeLuccoVfOsykjw5mMIN3ERHPN6DJr1wj/dev', {
-      method: 'POST',
-      mode: 'no-cors',
-      body: JSON.stringify(quizData),
-      headers: { 'Content-Type': 'application/json' }
-    })
-    .then(response => {
-      console.log('Fetch completed');
-      // Note: response will be opaque due to no-cors mode
-    })
-    .catch(error => {
-      console.error('Fetch error:', error);
-    });
-  };
-  form.appendChild(button);
+    // Calculate results
+    const results = calculateResult();
+    displayResults(results);
+  }
 
   function calculateResult() {
     const totals = { fire: 0, water: 0, earth: 0, air: 0 };
-    const formData = new FormData(form);
-
-    for (let [key, value] of formData.entries()) {
-      const weights = answerWeights[value];
-      for (let elem in weights) {
+    
+    // Sum up all the weights from selected answers
+    questions.forEach((_, i) => {
+      const selectedValue = document.querySelector(`input[name="q${i+1}"]:checked`).value;
+      const weights = answerWeights[selectedValue];
+      for (const elem in weights) {
         totals[elem] += weights[elem];
       }
-    }
+    });
 
+    // Calculate percentages
     const totalScore = Object.values(totals).reduce((a, b) => a + b, 0);
     const percentages = {};
-    for (let elem in totals) {
+    for (const elem in totals) {
       percentages[elem] = Math.round((totals[elem] / totalScore) * 100);
     }
 
+    // Sort elements by percentage (highest first)
     const sorted = Object.entries(percentages).sort((a, b) => b[1] - a[1]);
-    const [topElem, topPercent] = sorted[0];
-    const [secondElem, secondPercent] = sorted[1];
-    // Blend only if secondary is at least 90% of the top value
-    const blend = secondPercent >= (topPercent * 0.9);
-
-    // Create results data object to return
-    const resultsData = {
+    
+    // Determine blend type using improved logic
+    const blendResult = determineBlendType(sorted);
+    
+    return {
       percentages: percentages,
-      topElement: topElem,
-      topPercentage: topPercent,
-      secondElement: secondElem,
-      secondPercentage: secondPercent,
-      isBlended: blend,
-      elementType: blend ? `${topElem}_${secondElem}_blend` : `${topElem}_pure`,
-      resultName: blend ? getBlendName(topElem, secondElem, percentages) : getSingleElementName(topElem),
+      topElement: sorted[0][0],
+      topPercentage: sorted[0][1],
+      ...blendResult,
       timestamp: new Date().toISOString()
     };
+  }
 
-    // Display results (existing code)
-    const result = document.getElementById("result");
-    result.innerHTML = `
+  function determineBlendType(sorted) {
+    const [first, second, third, fourth] = sorted;
+    const [topElem, topPercent] = first;
+    const [secondElem, secondPercent] = second;
+    const [thirdElem, thirdPercent] = third;
+    const [fourthElem, fourthPercent] = fourth;
+
+    // Pure element: top element is 15+ points ahead of second
+    if (topPercent - secondPercent >= 15) {
+      return {
+        isBlended: false,
+        elementType: topElem + '_pure',
+        resultElements: [topElem],
+        resultName: getSingleElementName(topElem)
+      };
+    }
+
+    // Two-way blend: Check first if top 2 are close (within 8 points) and both high (25%+)
+    if (topPercent - secondPercent <= 8 && secondPercent >= 25) {
+      const elements = [topElem, secondElem].sort();
+      return {
+        isBlended: true,
+        elementType: 'two_way_blend',
+        resultElements: elements,
+        resultName: getBlendName(elements)
+      };
+    }
+
+    // Check for tight three-way blend: top 3 all within 10 points of each other and all 25%+
+    if (thirdPercent >= 25 && (topPercent - thirdPercent) <= 10 && (secondPercent - thirdPercent) <= 5) {
+      const elements = [topElem, secondElem, thirdElem].sort();
+      return {
+        isBlended: true,
+        elementType: 'three_way_blend',
+        resultElements: elements,
+        resultName: getBlendName(elements)
+      };
+    }
+
+    // Four-way blend: all elements 22%+ and top element not more than 12 points ahead of lowest
+    if (fourthPercent >= 22 && (topPercent - fourthPercent) <= 12) {
+      return {
+        isBlended: true,
+        elementType: 'four_way_blend',
+        resultElements: ['air', 'earth', 'fire', 'water'].sort(),
+        resultName: getBlendName(['air', 'earth', 'fire', 'water'])
+      };
+    }
+
+    // Looser two-way blend: top 2 within 15 points and second element 20%+
+    if (topPercent - secondPercent <= 15 && secondPercent >= 20) {
+      const elements = [topElem, secondElem].sort();
+      return {
+        isBlended: true,
+        elementType: 'two_way_blend',
+        resultElements: elements,
+        resultName: getBlendName(elements)
+      };
+    }
+
+    // Default to pure if no blend conditions are met
+    return {
+      isBlended: false,
+      elementType: topElem + '_pure',
+      resultElements: [topElem],
+      resultName: getSingleElementName(topElem)
+    };
+  }
+
+  function displayResults(results) {
+    const resultDiv = document.getElementById("result");
+    resultDiv.innerHTML = `
       <h2>Your Debating Personality Mix</h2>
-      ${generateBar("🔥 Fire", percentages.fire, "#e74c3c")}
-      ${generateBar("🌊 Water", percentages.water, "#3498db")}
-      ${generateBar("🌍 Earth", percentages.earth, "#2ecc71")}
-      ${generateBar("🌬 Air", percentages.air, "#9b59b6")}
+      ${generateBar("🔥 Fire", results.percentages.fire, "#e74c3c")}
+      ${generateBar("🌊 Water", results.percentages.water, "#3498db")}
+      ${generateBar("🌍 Earth", results.percentages.earth, "#2ecc71")}
+      ${generateBar("🌬 Air", results.percentages.air, "#9b59b6")}
       <div style="margin-top:25px;">
-        ${blend ? blendedDescription(topElem, secondElem, percentages) : singleDescription(topElem)}
+        ${results.isBlended ? blendedDescription(results) : singleDescription(results.topElement)}
       </div>
       <button onclick="window.location.reload()" style="margin-top:20px; padding: 10px 20px; background:#555; color:white; border:none; border-radius:5px; cursor:pointer;">Retake Quiz</button>
     `;
-    result.style.display = 'block';
+    resultDiv.style.display = 'block';
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    
-    // Return the results data
-    return resultsData;
   }
 
   function generateBar(label, percent, color) {
     return `
       <div><strong>${label}:</strong> ${percent}%</div>
-      <div class="bar"><div class="bar-inner" style="width:${percent}%; background:${color};">${percent > 10 ? percent + '%' : ''}</div></div>
+      <div class="bar">
+        <div class="bar-inner" style="width:${percent}%; background:${color};">
+          ${percent > 10 ? percent + '%' : ''}
+        </div>
+      </div>
     `;
   }
 
   function singleDescription(elem) {
-    const nameMap = {
-      fire: "🔥 Fire",
-      water: "🌊 Water",
-      earth: "🌍 Earth",
-      air: "🌬 Air"
-    };
-    const title = `<h3>${nameMap[elem]} – The Pure Element</h3>`;
-    return `${title}<p>${descriptions[elem].text}</p>`;
+    return `<h3>${descriptions[elem].name}</h3><p>${descriptions[elem].text}</p>`;
   }
 
   function getSingleElementName(elem) {
-    const nameMap = {
-      fire: "Fire – The Challenger",
-      water: "Water – The Empath", 
-      earth: "Earth – The Analyst",
-      air: "Air – The Visionary"
-    };
-    return nameMap[elem] || elem;
+    return descriptions[elem].name;
   }
 
-  function getBlendName(primary, secondary, percentages) {
+  function getBlendName(elements) {
     const mixMap = {
-      // Two-element blends
-      "air+fire": "Lightning",
-      "air+earth": "Sand", 
-      "air+water": "Mist",
-      "earth+fire": "Lava",
-      "earth+water": "Mud",
-      "fire+water": "Steam",
-      
-      // Three-element blends
-      "air+earth+fire": "Wildfire",
-      "air+fire+water": "Storm",
-      "air+earth+water": "Quicksand", 
-      "earth+fire+water": "Volcano",
-      
-      // Four-element blend
-      "air+earth+fire+water": "Avatar"
+      "air,fire": "⚡ Lightning",
+      "air,earth": "🏜️ Sand", 
+      "air,water": "🌫️ Mist",
+      "earth,fire": "🐦‍🔥 Lava",
+      "earth,water": "🤎 Mud",
+      "fire,water": "♨️ Steam",
+      "air,earth,fire": "🔥🌪 Wildfire",
+      "air,fire,water": "⛈ Storm",
+      "air,earth,water": "🌫 Quicksand", 
+      "earth,fire,water": "🌋 Volcano",
+      "air,earth,fire,water": "🌌 Avatar"
     };
 
-    // Get top elements above 20%
-    const sortedElems = Object.entries(percentages).sort((a, b) => b[1] - a[1]);
-    const significantElems = sortedElems.filter(([_, v]) => v > 20).map(([k]) => k);
-    
-    // Create combo key with consistent ordering (alphabetical)
-    const comboKey = significantElems.length >= 2 ? 
-      significantElems.sort().join('+') : 
-      [primary, secondary].sort().join('+');
-    
-    return mixMap[comboKey] || `${primary}+${secondary} blend`;
+    const key = [...elements].sort().join(',');
+    return mixMap[key] || `${elements.map(e => e.charAt(0).toUpperCase() + e.slice(1)).join('-')} Blend`;
   }
 
-  function blendedDescription(primary, secondary, percentages) {
+  function blendedDescription(results) {
+    const elements = results.resultElements;
+    const key = elements.join(',');
+    
     const mixMap = {
-      // Two-element blends
-      "air+fire": { name: "⚡ Lightning", desc: "You dazzle with sharp wit and wild creativity. You move fast, think even faster, and always keep your opponents guessing. You're bold, energetic, and can electrify the room when you're on fire. As a debater, you thrive in fast-paced exchanges, love POIs, and often shine in whip or reply speeches where thinking on your feet matters most." },
-      "air+earth": { name: "🏜️ Sand", desc: "You blend structure and abstraction effortlessly. Grounded in logic yet always flexible, you erode weak arguments grain by grain — subtle, strategic, and quietly powerful. As a debater, you're likely the silent strategist. You may not speak the loudest, but your framing shifts the debate in powerful, underappreciated ways." },
-      "air+water": { name: "🌫️ Mist", desc: "Elusive but persuasive, you bring sensitivity and originality to every round. You often sway others with subtle but powerful insights. Gentle but never weak, you make complexity elegant. You're the type of debater who thrives in nuanced motions and excels at pulling hidden assumptions to the surface." },
-      "earth+fire": { name: "🐦‍🔥 Lava", desc: "A grounded powerhouse. You use structured logic but erupt with fiery impact when needed. Calm under pressure, yet explosively persuasive. Your calm surface hides formidable force. You're a master at layering strong frameworks with impactful rhetoric — ideal for opening half roles where the foundation matters." },
-      "earth+water": { name: "🤎 Mud", desc: "Calm, consistent, and precise. You win rounds by gently but firmly shaping the terrain of debate. You're a stabilizer in the storm — dependable, grounded, and quietly effective. Your preferred roles are often those requiring steady development, like deputy speeches or reply summaries that reinforce and refine the team's message." },
-      "fire+water": { name: "♨️ Steam", desc: "You are both passionate and empathetic — combining intensity with emotional insight. You're a speaker who brings both force and grace into the room. You press hard, but you listen deeply too. You are often the emotional anchor of your team, capable of balancing pathos and logos, making you excellent at persuasive narrative-building and refutation alike." },
-      
-      // Three-element blends
-      "air+earth+fire": { name: "🔥🌪 Wildfire", desc: "You're rapid, calculated chaos. Your arguments spread like wildfire — unpredictable, forceful, and impossible to ignore. You balance creativity with logic and intensity with finesse. As a debater, you likely thrive in back halves where you can adapt quickly and burn through weak opposition lines. When you speak, the room pays attention — because no one knows what's coming next, but they know it'll leave an impact." },
-      "air+fire+water": { name: "⛈ Storm", desc: "You're a tempest of emotion, energy, and creativity — unpredictable and powerful. You blend rhetorical flair, emotional appeal, and visionary framing into an explosive mix. In debate, you're the force that disrupts the expected flow, reframing debates and overwhelming opponents with multi-faceted pressure. You thrive on the unexpected and often change the tide with a single inspired speech." },
-      "air+earth+water": { name: "🌫 Quicksand", desc: "Slow, deliberate, and deadly effective. You subtly pull opponents off balance and drag them into deeply framed complexity. You excel at setting traps and reframing debates in ways that disorient your opponents while staying calm yourself. As a debater, you are the sleeper threat — underestimated at first, but lethal by the final speech." },
-      "earth+fire+water": { name: "🌋 Volcano", desc: "Explosive yet grounded, you combine passion, empathy, and structure. You build arguments that simmer slowly before erupting in a dramatic finish. In debate, you're the teammate who holds the room's attention from the first word to the last. With control, precision, and intensity, you're an all-rounder capable of taking on any role — and dominating it." },
-      
-      // Four-element blend
-      "air+earth+fire+water": { name: "🌌 Avatar", desc: "You are the master of all elements — the ultimate debater who seamlessly blends passion, logic, creativity, and empathy. You adapt to any situation, any opponent, any motion with fluid mastery. In debate, you're the complete package: strategic like Earth, fierce like Fire, intuitive like Water, and innovative like Air. You don't just participate in debates — you transcend them, bringing a rare combination of analytical depth, emotional intelligence, creative insight, and compelling delivery that makes you formidable in any role on any team." }
+      "air,fire": { 
+        name: "⚡ Lightning", 
+        desc: "You dazzle with sharp wit and wild creativity. You move fast, think even faster, and always keep your opponents guessing. You're bold, energetic, and can electrify the room when you're on fire." 
+      },
+      "air,earth": { 
+        name: "🏜️ Sand", 
+        desc: "You blend structure and abstraction effortlessly. Grounded in logic yet always flexible, you erode weak arguments grain by grain — subtle, strategic, and quietly powerful." 
+      },
+      "air,water": { 
+        name: "🌫️ Mist", 
+        desc: "Elusive but persuasive, you bring sensitivity and originality to every round. You often sway others with subtle but powerful insights. Gentle but never weak, you make complexity elegant." 
+      },
+      "earth,fire": { 
+        name: "🐦‍🔥 Lava", 
+        desc: "A grounded powerhouse. You use structured logic but erupt with fiery impact when needed. Calm under pressure, yet explosively persuasive. Your calm surface hides formidable force." 
+      },
+      "earth,water": { 
+        name: "🤎 Mud", 
+        desc: "Calm, consistent, and precise. You win rounds by gently but firmly shaping the terrain of debate. You're a stabilizer in the storm — dependable, grounded, and quietly effective." 
+      },
+      "fire,water": { 
+        name: "♨️ Steam", 
+        desc: "You are both passionate and empathetic — combining intensity with emotional insight. You're a speaker who brings both force and grace into the room. You press hard, but you listen deeply too." 
+      },
+      "air,earth,fire": { 
+        name: "🔥🌪 Wildfire", 
+        desc: "You're rapid, calculated chaos. Your arguments spread like wildfire — unpredictable, forceful, and impossible to ignore. You balance creativity with logic and intensity with finesse." 
+      },
+      "air,fire,water": { 
+        name: "⛈ Storm", 
+        desc: "You're a tempest of emotion, energy, and creativity — unpredictable and powerful. You blend rhetorical flair, emotional appeal, and visionary framing into an explosive mix." 
+      },
+      "air,earth,water": { 
+        name: "🌫 Quicksand", 
+        desc: "Slow, deliberate, and deadly effective. You subtly pull opponents off balance and drag them into deeply framed complexity. You excel at setting traps and reframing debates." 
+      },
+      "earth,fire,water": { 
+        name: "🌋 Volcano", 
+        desc: "Explosive yet grounded, you combine passion, empathy, and structure. You build arguments that simmer slowly before erupting in a dramatic finish." 
+      },
+      "air,earth,fire,water": { 
+        name: "🌌 Avatar", 
+        desc: "You are the master of all elements — the ultimate debater who seamlessly blends passion, logic, creativity, and empathy. You adapt to any situation with fluid mastery." 
+      }
     };
 
-    // Get top elements above 20%
-    const sortedElems = Object.entries(percentages).sort((a, b) => b[1] - a[1]);
-    const significantElems = sortedElems.filter(([_, v]) => v > 20).map(([k]) => k);
-    
-    // Create combo key with consistent ordering (alphabetical)
-    const comboKey = significantElems.length >= 2 ? 
-      significantElems.sort().join('+') : 
-      [primary, secondary].sort().join('+');
-    
-    const mix = mixMap[comboKey];
+    const mix = mixMap[key];
 
     if (mix) {
+      const elementNames = elements.map(e => descriptions[e].name.split(' – ')[0]).join(' and ');
       return `<hr style="margin: 30px 0; border: none; border-top: 2px dashed #ccc;">
-<h3 style="font-size: 24px; color: #222;">${mix.name}</h3><p style="font-size: 18px; color: #444; line-height: 1.6;">${mix.desc}</p>`;
+        <h3 style="font-size: 24px; color: #222;">${mix.name}</h3>
+        <p style="font-size: 18px; color: #444; line-height: 1.6;">${mix.desc}</p>
+        <p>Your debating style combines ${elementNames}. This unique blend makes you ${getBlendStrengthDescription(key)}.</p>`;
     }
 
-    return `<h3>🔀 ${primary.toUpperCase()} + ${secondary.toUpperCase()}</h3><p>You're a unique blend of <strong>${primary}</strong> and <strong>${secondary}</strong>. Together, they form something new — but we don't yet have a name for it!</p>`;
+    // Fallback for unexpected combinations
+    const elementNames = elements.map(e => descriptions[e].name.split(' – ')[0]).join(' and ');
+    return `<h3>🔀 ${getBlendName(elements)}</h3>
+      <p>You're a unique combination of ${elementNames}. This rare blend means you approach debates with multiple strengths that make you highly adaptable and versatile across different debating styles.</p>`;
+  }
+
+  function getBlendStrengthDescription(blendKey) {
+    const strengths = {
+      "air,fire": "particularly strong in creative rebuttals and rapid-fire exchanges",
+      "air,earth": "exceptional at developing complex but well-structured arguments",
+      "air,water": "adept at nuanced framing and emotional appeals",
+      "earth,fire": "powerful in both logical construction and passionate delivery",
+      "earth,water": "skilled at building persuasive, empathetic cases with strong foundations",
+      "fire,water": "able to connect emotionally while maintaining strong rhetorical presence",
+      "air,earth,fire": "masterful at combining creativity, structure, and intensity",
+      "air,fire,water": "excellent at balancing innovation, passion, and empathy",
+      "air,earth,water": "skilled at strategic complexity and emotional intelligence",
+      "earth,fire,water": "powerful at structured passion with empathetic appeal",
+      "air,earth,fire,water": "versatile across all debating scenarios with complete adaptability"
+    };
+    return strengths[blendKey] || "versatile across multiple debating styles";
   }
 </script>
-
 </body>
 </html>
