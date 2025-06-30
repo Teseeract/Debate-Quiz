@@ -390,6 +390,7 @@
     `;
     resultDiv.style.display = 'block';
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    exportToSheet(results);
   }
 
   function generateBar(label, percent, color) {
@@ -513,6 +514,37 @@
     };
     return strengths[blendKey] || "versatile across multiple debating styles";
   }
+
+function exportToSheet(results) {
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVRYPkbqWQ9s0gvtZ0S4MfeW4f2WLMb0hCQj8uXbdLtziV6SelrZ3Kubhu3Spe_83XKQ/exec";
+
+  const payload = {
+    timestamp: results.timestamp,
+    topElement: results.topElement,
+    topPercentage: results.topPercentage,
+    isBlended: results.isBlended,
+    elementType: results.elementType,
+    resultName: results.resultName,
+    fire: results.percentages.fire,
+    water: results.percentages.water,
+    earth: results.percentages.earth,
+    air: results.percentages.air
+  };
+
+console.log("Sending payload:", payload);
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+mode: "no-cors",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(() => console.log("Results sent to Google Sheets"))
+  .catch(err => console.error("Error sending to Sheets:", err));
+}
+
 </script>
 </body>
 </html>
