@@ -123,7 +123,7 @@ function getBlendName(elements) {
     "air,earth": "🏜️ Sand", 
     "air,water": "🌫️ Mist",
     "earth,fire": "🐦‍🔥 Lava",
-    "earth,water": "🤎 Mud",
+    "earth,water": "🌳 Wood",
     "fire,water": "♨️ Steam",
     "air,earth,fire": "🔥🌪 Wildfire",
     "air,fire,water": "⛈ Storm",
